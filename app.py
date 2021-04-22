@@ -7,49 +7,12 @@ from models import Card
 #func2: сопоставить карточки в правильном порядке
 #func3: вывод данных в правильном формате
 
-def get_type(card):
-	print(card, card.transport_type)
-	msg = ''
-	if card.transport_type != '' and card.transport_number != '':
-		msg += f'Take {card.transport_type} {card.transport_number}'
-	return msg
-
-
-def get_from_to(card):
-	msg = ''
-	if card.departure != '' and card.destination != '':
-		msg = f'from {card.departure} to {card.destination}.'
-	return msg
-
-
-def get_gate(card):
-	msg = ''
-	if card.gate != '':
-		msg = f'Gate {card.gate}.'
-	return msg
-
-
-def get_seat(card):
-	msg = ''
-	if card.seat != '':
-		msg = f'Seat {card.seat}.'
-	return msg
-
-
-def get_baggage(card):
-	msg = ''
-	if card.baggage.isdigit(): 
-		msg = f'Baggage drop at ticket counter {card.baggage}.'
-	elif card.baggage == 'auto':
-		msg = f''
-	return msg
-
 
 def send(cards):
 	msg = ''
-	for card in sorted_cards:
-		msg += get_type(card) + get_from_to(card) + get_gate(card) + get_seat(card) + get_baggage(card) + '\n'
-	return ''
+	for card in cards:
+		msg += card.get_type() + ' ' + card.get_from_to() +  ' ' + card.get_gate() + ' ' + card.get_seat() + ' ' + card.get_baggage() + '\n'
+	return msg.replace('  ', ' ')
 
 
 def validate(cards):
@@ -59,17 +22,34 @@ def validate(cards):
 	return True
 
 
+# if count(departure) == 1:
+# search for city where dep=departure
+# else:
+# search for city where dep=cards[i-1].destination
+
+
 def sort_cards(cards):
+	sorted_cards = []
+
 	for i in range(0, len(cards)):
+		count = 0
 		for j in range(0, len(cards)):
-			if cards[i].destination == cards[j].departure:
-				sorted_cards.append(cards[i])
+			if cards[i].departure == cards[j].destination:
+				count += 1
+		if count == 0:
+			sorted_cards.append(cards[i])
+
+	for i in range(1, len(cards)):
+		for j in range(0, len(cards)):
+			if cards[j].departure == sorted_cards[i-1].destination:
 				sorted_cards.append(cards[j])
-	return cards
+
+	return sorted_cards
+
+
 
 ALLOWED_TRANSPORTS = ['bus', 'train', 'flight']
 cards = []
-sorted_cards = []
 
 def start(input_cards_list):
 	if validate(input_cards_list):
@@ -82,10 +62,10 @@ def start(input_cards_list):
 							seat=str(input_card[5]),
 							baggage=str(input_card[6]))
 			cards.append(new_card)
-		sort_cards(cards)
+		sorted_cards = sort_cards(cards)
 		return send(sorted_cards)
 
 # на выходе мы получили полностью провалидированый массив обьектов, которые нам осталось
 # только отсортировать и вывести в правильном формате.
 
-print(start([['bus', '', 'Barcelona', 'Gerona Airport', '', '', ''], ['train', '78A', 'Madrid', 'Barcelona', '', '45B', ''], ['flight', 'SK455', 'Gerona Airport', 'Stockholm', '45B', '3A', '344']]))
+print(start([['bus', '', 'Moscow', 'Madrid', '', '', ''], ['train', 'AW412', 'Madrid', 'Stanbul', '', '', ''], ['bus', '', 'Barcelona', 'Gerona Airport', '', '', ''], ['train', '78A', 'Stanbul', 'Barcelona', '', '45B', 'auto'], ['flight', 'SK455', 'Gerona Airport', 'Stockholm', '45B', '3A', '344']]))
