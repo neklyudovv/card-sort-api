@@ -1,12 +1,7 @@
 from models import Card
 
-# [{transport_type:str, transport_number:str, departure:str, 
-#   destination:str, gate:str, seat:str, baggage:str}]
-
-#func1: сделать массив обьектов класса Card
-#func2: сопоставить карточки в правильном порядке
-#func3: вывод данных в правильном формате
-
+ALLOWED_TRANSPORTS = ['bus', 'train', 'flight']
+cards = []
 
 def send(cards):
 	msg = ''
@@ -20,12 +15,6 @@ def validate(cards):
 		if card[0] not in ALLOWED_TRANSPORTS:
 			return False
 	return True
-
-
-# if count(departure) == 1:
-# search for city where dep=departure
-# else:
-# search for city where dep=cards[i-1].destination
 
 
 def sort_cards(cards):
@@ -47,10 +36,6 @@ def sort_cards(cards):
 	return sorted_cards
 
 
-
-ALLOWED_TRANSPORTS = ['bus', 'train', 'flight']
-cards = []
-
 def start(input_cards_list):
 	if validate(input_cards_list):
 		for input_card in input_cards_list:
@@ -62,8 +47,8 @@ def start(input_cards_list):
 							seat=str(input_card[5]),
 							baggage=str(input_card[6]))
 			cards.append(new_card)
-		sorted_cards = sort_cards(cards)
-		return send(sorted_cards)
+		return send(sort_cards(cards))
+	return 'Некорректные данные'
 
 # на выходе мы получили полностью провалидированый массив обьектов, которые нам осталось
 # только отсортировать и вывести в правильном формате.
